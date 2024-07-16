@@ -1,0 +1,34 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: check-byte-order-marker
+    -   id: check-case-conflict
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: mixed-line-ending
+    -   id: trailing-whitespace
+
+-   repo: https://github.com/pre-commit/pre-commit
+    rev: v3.5.0
+    hooks:
+    -   id: validate_manifest
+
+-   repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+    -   id: fmt
+    -   id: cargo-check
+    -   id: clippy
+
+-   repo: local
+    hooks:
+    -   id: cargo-doc-sanity
+        name: cargo-doc-sanity
+        description: cargo-doc-sanity
+        entry: cargo doc --no-deps --all-features
+        language: system
+        types: [rust]
+        pass_filenames: false
