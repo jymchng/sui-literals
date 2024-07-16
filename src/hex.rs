@@ -6,7 +6,7 @@ use crate::error::{
 };
 use proc_macro::{Delimiter, Group, Literal, Span, TokenStream, TokenTree};
 use std::{fmt::Write, str::FromStr};
-use sui_types::base_types::{SUI_ADDRESS_LENGTH, SuiAddress};
+use sui_types::base_types::SUI_ADDRESS_LENGTH;
 
 const UNDERSCORE: char = '_';
 
@@ -19,10 +19,10 @@ impl TransformInto {
     fn from_str(which: &str, span: Span) -> ParsingResult<Self> {
         match which {
             "address" => {
-                Ok(TransformInto::SuiAddress)
+                Ok(Self::SuiAddress)
             },
             "object" => {
-                Ok(TransformInto::ObjectID)
+                Ok(Self::ObjectID)
             },
             _ => {
                 Err(ParseTokenStreamError::ParseError(format!(
@@ -48,27 +48,25 @@ fn compute_str_limbs(limbs: &[u8]) -> String {
 
 /// Construct an `ObjectID` literal from `limbs`.
 fn construct_objectid(limbs: &[u8], span: Span) -> GenerationTokenResult<TokenStream> {
-    
     let limbs_str = compute_str_limbs(limbs);
     let source = format!("::sui_types::base_types::ObjectID::new([{limbs_str}])");
 
-    Ok(TokenStream::from_str(&source).map_err(|err| {
-        GenerateTokenStreamError::GenerationError(
-            format!("attempt to generate `TokenStream` from `source` = {source} has failed due to error: {err}"), span)
-    })?)
+    TokenStream::from_str(&source).map_err(|err| {
+    GenerateTokenStreamError::GenerationError(
+        format!("attempt to generate `TokenStream` from `source` = {source} has failed due to error: {err}"), span)
+    })
 }
 
 /// Construct a `SuiAddress` literal from `limbs`.
 fn construct_address(limbs: &[u8], span: Span) -> GenerationTokenResult<TokenStream> {
-    
     let limbs_str = compute_str_limbs(limbs);
     let object_id_source = format!("::sui_types::base_types::ObjectID::new([{limbs_str}])");
     let source = format!("<::sui_types::base_types::SuiAddress::from({object_id_source})>");
 
-    Ok(TokenStream::from_str(&source).map_err(|err| {
+    TokenStream::from_str(&source).map_err(|err| {
         GenerateTokenStreamError::GenerationError(
             format!("attempt to generate `TokenStream` from `source` = {source} has failed due to error: {err}"), span)
-    })?)
+    })
 }
 
 fn parse_suffix(source: &Literal) -> ParsingResult<(TransformInto, String)> {
@@ -79,7 +77,7 @@ fn parse_suffix(source: &Literal) -> ParsingResult<(TransformInto, String)> {
             "unable to find the delimiter `{UNDERSCORE}`; you must indicate whether you want to parse the literal as a `SuiAddress` by suffixing it with `'_address'` or as an `ObjectId` by suffixing it with `'_object'`"
         ), span)
     })?;
-    let cloned_source = source.clone();
+    let cloned_source = source;
     let (value, suffix) = cloned_source.split_at(suffix_index);
     let value = value.strip_suffix(UNDERSCORE).unwrap_or(value);
     let suffix = suffix.strip_prefix(UNDERSCORE).unwrap_or(value);
@@ -104,7 +102,7 @@ fn transform_literal(source: &Literal) -> TransformationTokenResult<TokenStream>
 
     match address_or_object {
         TransformInto::ObjectID => Ok(construct_objectid(&limbs, source.span())?),
-        TransformInto::SuiAddress => todo!(),
+        TransformInto::SuiAddress => Ok(construct_address(&limbs, source.span())?),
     }
 }
 
@@ -135,9 +133,9 @@ fn transform_tree(tree: TokenTree) -> TransformationTokenResult<TokenTree> {
             Ok(tree)
         }
         tree => {
-            return Err(TransformTokenStreamError::TransformError(format!(
-                "error: only `TokenTree::Group` and `TokenTree::Literal` are allowed in the `TokenStream`"
-            ), tree.span()))
+            Err(TransformTokenStreamError::TransformError(
+                "error: only `TokenTree::Group` and `TokenTree::Literal` are allowed in the `TokenStream`".to_string(),
+                tree.span()))
         },
     }
 }
@@ -145,7 +143,7 @@ fn transform_tree(tree: TokenTree) -> TransformationTokenResult<TokenTree> {
 /// Iterate over a [`TokenStream`] and transform all [`TokenTree`]s.
 pub fn transform_stream_hash(stream: TokenStream) -> TransformationTokenResult<TokenStream> {
     let mut result = TokenStream::new();
-    for tree in stream.into_iter() {
+    for tree in stream {
         result.extend(TokenStream::from(transform_tree(tree)?));
     }
     Ok(result)
