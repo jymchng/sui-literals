@@ -32,17 +32,18 @@ rayon = "1.7.0"
 bcs = "0.1.5"
 chrono = "0.4.26"
 thiserror = "1.0.62"
+hex = "0.4.3"
 
 # Dependencies from a Git repository with a specific revision
 sui-types = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-sui-sdk = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-shared-crypto = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-sui-transaction-builder = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-sui-keys = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-sui-json = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-sui-config = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
-sui-adapter-latest = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# sui-sdk = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# shared-crypto = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# sui-transaction-builder = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# sui-keys = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# sui-json = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# sui-config = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
+# sui-adapter-latest = { git = "https://github.com/MystenLabs/sui", rev = "c11b6173cc738c106d9d11e70f80fc07d119aaad" }
 
 [dev-dependencies]
 serde_json = "1.0.82"
