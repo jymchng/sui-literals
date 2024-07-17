@@ -6,7 +6,6 @@ use crate::error::{
 };
 use proc_macro::{Delimiter, Group, Literal, Span, TokenStream, TokenTree};
 use std::{fmt::Write, str::FromStr};
-use sui_types::base_types::SUI_ADDRESS_LENGTH;
 
 const UNDERSCORE: char = '_';
 
@@ -35,7 +34,7 @@ impl TransformInto {
 
 fn compute_str_limbs(limbs: &[u8]) -> String {
     let mut limbs_str = String::new();
-    let mut limbs_vec = vec![0; SUI_ADDRESS_LENGTH];
+    let mut limbs_vec = vec![0; 32];
     for (limb, b) in limbs_vec.iter_mut().zip(limbs) {
         *limb = *b;
     }
