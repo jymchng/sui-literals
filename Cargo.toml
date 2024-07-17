@@ -36,6 +36,7 @@ hex = "^0.4.3"
 
 # Dependencies from a Git repository with a specific revision
 sui-types = { git = "https://github.com/MystenLabs/sui", branch = "mainnet" }
+debug_print = "1.0.0"
 # sui-sdk = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
 # sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
 # shared-crypto = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }

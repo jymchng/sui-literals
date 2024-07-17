@@ -1,13 +1,37 @@
+//! This example demonstrates a compile-time failure when using the `sui_literal` macro with an invalid suffix.
+//! The suffix `_obct` is not recognized and will cause a compilation error.
+//!
+//! ```compile_fail
+//! use sui_literals::sui_literal;
+//! use sui_types::base_types::{ObjectID, SuiAddress};
+//! use std::str::FromStr;
+//!
+//! let object_id = sui_literal!(0x01b0d52321ce82d032430f859c6df0c52eb9ce1a337a81d56d89445db2d624f0_obct);
+//! ```
+//!
+//! This example demonstrates a compile-time failure when using the `sui_literal` macro with an invalid suffix.
+//! The suffix `_obct` is not recognized and will cause a compilation error.
+//!
+//! ```compile_fail
+//! use sui_literals::sui_literal;
+//! use sui_types::base_types::{ObjectID, SuiAddress};
+//! use std::str::FromStr;
+//!
+//! let sui_address = sui_literal!(0x01b0d52321ce82d032430f859c6df081d56d89445db2d624f0_obct);
+//! ```
+
 #![warn(clippy::all, clippy::pedantic, clippy::cargo, clippy::nursery)]
 
 use crate::error::{
     GenerateTokenStreamError, GenerationTokenResult, ParseTokenStreamError, ParsingResult,
     TransformTokenStreamError, TransformationTokenResult,
 };
+use debug_print::debug_eprintln;
 use proc_macro::{Delimiter, Group, Literal, Span, TokenStream, TokenTree};
 use std::{fmt::Write, str::FromStr};
 
 const UNDERSCORE: char = '_';
+const SUI_ADDRESS_BYTE_LENGTH: usize = 32;
 
 enum TransformInto {
     SuiAddress,
@@ -32,9 +56,19 @@ impl TransformInto {
     }
 }
 
-fn compute_str_limbs(limbs: &[u8]) -> String {
+fn compute_str_limbs(limbs: &[u8], span: Span) -> GenerationTokenResult<String> {
+    debug_eprintln!("inside `compute_str_limbs`; limbs = {:?}", &limbs);
+    if limbs.len() > 32 {
+        return Err(GenerateTokenStreamError::GenerationError(
+            format!(
+                "error: the number of limbs is not `{SUI_ADDRESS_BYTE_LENGTH}`, but it is `{}`",
+                limbs.len()
+            ),
+            span,
+        ));
+    }
     let mut limbs_str = String::new();
-    let mut limbs_vec = vec![0; 32];
+    let mut limbs_vec = vec![0; SUI_ADDRESS_BYTE_LENGTH];
     for (limb, b) in limbs_vec.iter_mut().zip(limbs) {
         *limb = *b;
     }
@@ -42,13 +76,20 @@ fn compute_str_limbs(limbs: &[u8]) -> String {
         let _ = write!(&mut limbs_str, "{limb}_u8, ")
             .map_err(|err| format!("attempt to write `\"{limb}_u8\"` but failed; error: {err}"));
     }
-    limbs_str.trim_end_matches(", ").into()
+    let result: String = limbs_str.trim_end_matches(", ").into();
+    debug_eprintln!("inside `compute_str_limbs`; result = {:?}", &result);
+    Ok(result)
 }
 
 /// Construct an `ObjectID` literal from `limbs`.
 fn construct_objectid(limbs: &[u8], span: Span) -> GenerationTokenResult<TokenStream> {
-    let limbs_str = compute_str_limbs(limbs);
-    let source = format!("::sui_types::base_types::ObjectID::new([{limbs_str}])");
+    let limbs_str = compute_str_limbs(limbs, span)?;
+    let source = format!(
+        "{{
+        use ::sui_types as __suitypes;
+        __suitypes::base_types::ObjectID::new([{limbs_str}])
+    }}"
+    );
 
     TokenStream::from_str(&source).map_err(|err| {
     GenerateTokenStreamError::GenerationError(
@@ -58,10 +99,15 @@ fn construct_objectid(limbs: &[u8], span: Span) -> GenerationTokenResult<TokenSt
 
 /// Construct a `SuiAddress` literal from `limbs`.
 fn construct_address(limbs: &[u8], span: Span) -> GenerationTokenResult<TokenStream> {
-    let limbs_str = compute_str_limbs(limbs);
-    let object_id_source = format!("::sui_types::base_types::ObjectID::new([{limbs_str}])");
-    let source = format!("<::sui_types::base_types::SuiAddress::from({object_id_source})>");
-
+    let limbs_str = compute_str_limbs(limbs, span)?;
+    let object_id_source = format!("__suitypes::base_types::ObjectID::new([{limbs_str}])");
+    let source = format!(
+        "{{
+        use ::sui_types as __suitypes;
+        __suitypes::base_types::SuiAddress::from({object_id_source})
+    }}"
+    );
+    debug_eprintln!("inside `construct_address` function; `source` = {source}");
     TokenStream::from_str(&source).map_err(|err| {
         GenerateTokenStreamError::GenerationError(
             format!("attempt to generate `TokenStream` from `source` = {source} has failed due to error: {err}"), span)
@@ -76,12 +122,14 @@ fn parse_suffix(source: &Literal) -> ParsingResult<(TransformInto, String)> {
             "unable to find the delimiter `{UNDERSCORE}`; you must indicate whether you want to parse the literal as a `SuiAddress` by suffixing it with `'_address'` or as an `ObjectId` by suffixing it with `'_object'`"
         ), span)
     })?;
+    debug_eprintln!("inside `parse_suffix` function; `suffix_index` = {suffix_index}");
     let cloned_source = source;
     let (value, suffix) = cloned_source.split_at(suffix_index);
     let value = value.strip_suffix(UNDERSCORE).unwrap_or(value);
     let suffix = suffix.strip_prefix(UNDERSCORE).unwrap_or(value);
-    let (_, which) = suffix.split_at(1);
-    let address_or_object = TransformInto::from_str(which, span)?;
+    debug_eprintln!("inside `parse_suffix` function; `value` = {value}");
+    debug_eprintln!("inside `parse_suffix` function; `suffix` = {suffix}");
+    let address_or_object = TransformInto::from_str(suffix, span)?;
 
     Ok((address_or_object, value.into()))
 }
