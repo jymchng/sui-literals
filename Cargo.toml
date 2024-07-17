@@ -19,24 +19,13 @@ proc-macro = true # Indicates that this library is a procedural macro
 
 [dependencies]
 # Dependencies with specific versions
-tokio = "^1.26.0"
-anyhow = "^1.0.69"
 serde = { version = "^1.0.159", features = ["derive"] }
-lazy_static = "^1.4.0"
-text-colorizer = "^1.0.0"
-fastcrypto = "^0.1.4"
-base64 = "^0.21.0"
-futures = "^0.3.28"
-itertools = "^0.10.5"
-rayon = "^1.7.0"
-bcs = "^0.1.5"
-chrono = "^0.4.26"
 thiserror = "^1.0.62"
 hex = "^0.4.3"
+debug_print = "1.0.0"
 
 # Dependencies from a Git repository with a specific revision
-sui-types = { git = "https://github.com/MystenLabs/sui", branch = "mainnet" }
-debug_print = "1.0.0"
+# sui-types = { git = "https://github.com/MystenLabs/sui", branch = "mainnet" }
 # sui-sdk = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
 # sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
 # shared-crypto = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
@@ -45,7 +34,3 @@ debug_print = "1.0.0"
 # sui-json = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
 # sui-config = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
 # sui-adapter-latest = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-
-[dev-dependencies]
-serde_json = "1.0.82"
-tempfile = "3.3.0"
