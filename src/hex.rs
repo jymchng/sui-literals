@@ -73,7 +73,7 @@
 //! use sui_types::base_types::{ObjectID, SuiAddress};
 //! use std::str::FromStr;
 //!
-//! let sui_address = sui_literal!(0x01b0d52321ce82d032430f859c6df081d56d89445db2d624f0_obct);
+//! let sui_address = sui_literal!(0x01b0d52321ce82d032430f859c6df081d56d89445db2d624f0_object);
 //! ```
 //!
 //! The above example also demonstrates a compile-time failure with an invalid suffix `_obct`.
@@ -100,6 +100,7 @@ use proc_macro::{Delimiter, Group, Literal, Span, TokenStream, TokenTree};
 use std::{fmt::Write, str::FromStr};
 
 const UNDERSCORE: char = '_';
+static O_X: &str = "0x";
 const SUI_ADDRESS_BYTE_LENGTH: usize = 32;
 
 /// Enumerates the target types for transformation.
@@ -124,7 +125,7 @@ impl TransformInto {
 
 /// Computes a string representation of limbs for hexadecimal literals.
 fn compute_str_limbs(limbs: &[u8], span: Span) -> GenerationTokenResult<String> {
-    debug_eprintln!("Inside `compute_str_limbs`; limbs = {:?}", &limbs);
+    debug_eprintln!("inside `compute_str_limbs`; limbs = {:?}", &limbs);
 
     if limbs.len() > SUI_ADDRESS_BYTE_LENGTH {
         return Err(GenerateTokenStreamError::GenerationError(
@@ -150,7 +151,7 @@ fn compute_str_limbs(limbs: &[u8], span: Span) -> GenerationTokenResult<String> 
     }
 
     let result: String = limbs_str.trim_end_matches(", ").into();
-    debug_eprintln!("Inside `compute_str_limbs`; result = {:?}", &result);
+    debug_eprintln!("inside `compute_str_limbs`; result = {:?}", &result);
     Ok(result)
 }
 
@@ -183,7 +184,7 @@ fn construct_address(limbs: &[u8], span: Span) -> GenerationTokenResult<TokenStr
     }}"
     );
 
-    debug_eprintln!("Inside `construct_address` function; `source` = {source}");
+    debug_eprintln!("inside `construct_address` function; `source` = {source}");
     TokenStream::from_str(&source).map_err(|err| {
         GenerateTokenStreamError::GenerationError(
             format!("Failed to generate `TokenStream` from `source` = {source}; error: {err}"),
@@ -201,15 +202,23 @@ fn parse_suffix(source: &Literal) -> ParsingResult<(TransformInto, String)> {
         ParseTokenStreamError::ParseError(format!("Unable to find `{UNDERSCORE}` delimiter"), span)
     })?;
 
-    debug_eprintln!("Inside `parse_suffix`; `suffix_index` = {suffix_index}");
+    debug_eprintln!("inside `parse_suffix`; `suffix_index` = {suffix_index}");
 
     let cloned_source = source;
     let (value, suffix) = cloned_source.split_at(suffix_index);
     let value = value.strip_suffix(UNDERSCORE).unwrap_or(value);
     let suffix = suffix.strip_prefix(UNDERSCORE).unwrap_or(value);
+    let value = value.strip_prefix(O_X).unwrap_or(value);
 
-    debug_eprintln!("Inside `parse_suffix`; `value` = {value}");
-    debug_eprintln!("Inside `parse_suffix`; `suffix` = {suffix}");
+    debug_eprintln!("inside `parse_suffix`; `value` = {value}");
+    debug_eprintln!("inside `parse_suffix`; `suffix` = {suffix}");
+
+    if value.len() != 64 {
+        return Err(ParseTokenStreamError::ParseError(
+            "the address cannot be converted into a byte array of size 32".to_string(),
+            span,
+        ));
+    }
 
     let address_or_object = TransformInto::from_str(suffix, span)?;
 
@@ -220,10 +229,10 @@ fn parse_suffix(source: &Literal) -> ParsingResult<(TransformInto, String)> {
 fn transform_literal(source: &Literal) -> TransformationTokenResult<TokenStream> {
     let (address_or_object, value) = parse_suffix(source)?;
 
-    let value = value.strip_prefix("0x").unwrap_or(&value);
-    let limbs = hex::decode(value).map_err(|e| {
+    debug_eprintln!("inside `transform_literal`; `value` = {value}");
+    let limbs = hex::decode(&value).map_err(|e| {
         ParseTokenStreamError::ParseError(
-            format!("Unable to decode `{value}` into hexadecimal; error: {e}"),
+            format!("Unable to decode `{}` into hexadecimal; error: {e}", &value),
             source.span(),
         )
     })?;
