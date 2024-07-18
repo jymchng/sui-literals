@@ -2,12 +2,12 @@
 name = "sui-literals"
 version = "0.1.0"
 edition = "2021"
-authors = ["Your Name <your.email@example.com>"]
-description = "A library for Sui literals"
+authors = ["Jim Chng <jimchng@outlook.com>"]
+description = "A proc-macro for Sui literals"
 license = "MIT"
-repository = "https://github.com/yourusername/sui-literals"
+repository = "https://github.com/jymchng/sui-literals"
 documentation = "https://docs.rs/sui-literals"
-homepage = "https://yourwebsite.com/sui-literals"
+homepage = "https://github.com/jymchng/sui-literals"
 keywords = ["sui", "literals", "proc-macro"]
 categories = ["development-tools", "macros"]
 readme = "README.md"
@@ -15,22 +15,13 @@ exclude = ["target", "tests/tmp"]
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 
 [lib]
-proc-macro = true # Indicates that this library is a procedural macro
+proc-macro = true
 
 [dependencies]
-# Dependencies with specific versions
 serde = { version = "^1.0.159", features = ["derive"] }
 thiserror = "^1.0.62"
 hex = "^0.4.3"
-debug_print = "1.0.0"
+debug_print = "^1.0.0"
 
-# Dependencies from a Git repository with a specific revision
-# sui-types = { git = "https://github.com/MystenLabs/sui", branch = "mainnet" }
-# sui-sdk = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-# sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-# shared-crypto = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-# sui-transaction-builder = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-# sui-keys = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-# sui-json = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-# sui-config = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
-# sui-adapter-latest = { git = "https://github.com/MystenLabs/sui", rev = "bd45b28d68f4f7ce5780e3b74a9f3906e031d719" }
+[dev-dependencies]
+sui-types = { git = "https://github.com/MystenLabs/sui", branch = "main" }

@@ -279,28 +279,3 @@ pub fn transform_stream_hash(stream: TokenStream) -> TransformationTokenResult<T
 
     Ok(result)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_transform_literal_objectid() {
-        let literal = Literal::string(
-            "0x01b0d52321ce82d032430f859c6df0c52eb9ce1a337a81d56d89445db2d624f0_object",
-        );
-        let result = transform_literal(&literal).unwrap().to_string();
-        let expected = r#"::sui_types::base_types::ObjectID::new([1_u8, 176_u8, 213_u8, 35_u8, 33_u8, 206_u8, 130_u8, 208_u8, 50_u8, 67_u8, 15_u8, 133_u8, 156_u8, 109_u8, 240_u8, 197_u8, 46_u8, 185_u8, 206_u8, 26_u8, 51_u8, 122_u8, 129_u8, 213_u8, 109_u8, 137_u8, 68_u8, 93_u8, 178_u8, 214_u8, 36_u8, 240_u8])"#;
-        assert_eq!(result, expected);
-    }
-
-    #[test]
-    fn test_transform_literal_suiaddress() {
-        let literal = Literal::string(
-            "0x01b0d52321ce82d032430f859c6df0c52eb9ce1a337a81d56d89445db2d624f0_address",
-        );
-        let result = transform_literal(&literal).unwrap().to_string();
-        let expected = r#"::sui_types::base_types::SuiAddress::from(::sui_types::base_types::ObjectID::new([1_u8, 176_u8, 213_u8, 35_u8, 33_u8, 206_u8, 130_u8, 208_u8, 50_u8, 67_u8, 15_u8, 133_u8, 156_u8, 109_u8, 240_u8, 197_u8, 46_u8, 185_u8, 206_u8, 26_u8, 51_u8, 122_u8, 129_u8, 213_u8, 109_u8, 137_u8, 68_u8, 93_u8, 178_u8, 214_u8, 36_u8, 240_u8]))"#;
-        assert_eq!(result, expected);
-    }
-}
