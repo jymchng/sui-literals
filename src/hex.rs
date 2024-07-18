@@ -100,7 +100,7 @@ use proc_macro::{Delimiter, Group, Literal, Span, TokenStream, TokenTree};
 use std::{fmt::Write, str::FromStr};
 
 const UNDERSCORE: char = '_';
-static O_X: &str = "0x";
+const O_X: &str = "0x";
 const SUI_ADDRESS_BYTE_LENGTH: usize = 32;
 
 /// Enumerates the target types for transformation.
