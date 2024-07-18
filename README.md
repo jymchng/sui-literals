@@ -93,9 +93,13 @@
   - [Function `transform_literal`](#function-transform_literal)
   - [Function `transform_tree`](#function-transform_tree)
   - [Function `transform_stream_hash`](#function-transform_stream_hash)
-- [Development](#development)
+- [Debugging](#debugging)
 - [Contributing](#contributing)
+- [Building The Project](#building-the-project)
+- [Running Tests](#running-tests)
+- [Linting](#linting)
 - [License](#license)
+- [Acknowledgements](#acknowledgements)
 
 ## Overview
 
@@ -124,8 +128,6 @@ To integrate the sui-literals macros into your project, use the `sui_literal!` m
 ### Valid Usage
 ```rust
 use sui_literals::sui_literal;
-use sui_types::base_types::{ObjectID, SuiAddress};
-use std::str::FromStr;
 
 let object_id: ObjectID = sui_literal!(0x01b0d52321ce82d032430f859c6df0c52eb9ce1a337a81d56d89445db2d624f0_object);
 let sui_address: SuiAddress = sui_literal!(0x01b0d52321ce82d032430f859c6df081d56d89445db2d624f0_address);
@@ -153,30 +155,32 @@ The sui_literal macro transforms a hexadecimal literal into either an ObjectID o
 
 `_address`: Transforms the literal into a SuiAddress.
 
+## API
+
 ## Function Definitions
 
-### `TransformInto::from_str`
+### Enum `TransformInto::from_str`
 Parses a string slice to determine the transformation target (SuiAddress or ObjectID).
 
-### `compute_str_limbs`
+### Function `compute_str_limbs`
 Computes a string representation of limbs for hexadecimal literals.
 
-### `construct_objectid`
+### Function `construct_objectid`
 Constructs an ObjectID literal from limbs.
 
-### `construct_address`
+### Function `construct_address`
 Constructs a SuiAddress literal from limbs.
 
-### `parse_suffix`
+### Function `parse_suffix`
 Parses the suffix following a literal to determine the transformation type and value.
 
-### `transform_literal`
+### Function `transform_literal`
 Transforms a literal into a token stream based on its suffix.
 
-### `transform_tree`
+### Function `transform_tree`
 Recursively transforms all literals within a token tree.
 
-### `transform_stream_hash`
+### Function `transform_stream_hash`
 Iterates over a token stream and transforms all literals within it.
 
 ## Debugging
