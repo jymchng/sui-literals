@@ -81,6 +81,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Examples](#examples)
+- [Macros](#macros)
 - [Debugging](#debugging)
 - [Contributing](#contributing)
 - [Building The Project](#building-the-project)
@@ -92,6 +93,8 @@
 ## Overview
 
 `sui-literals` is a macro library designed to transform hexadecimal literals into `ObjectID` or `SuiAddress` types at compile-time. This ensures type safety and compile-time checks for transformation suffixes, streamlining development processes in Rust projects that work with Sui blockchain addresses and object IDs.
+
+It draws inspiration from
 
 ## Features
 
