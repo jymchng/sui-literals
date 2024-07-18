@@ -139,12 +139,12 @@ let object_id = sui_literal!(0x01b0d52321ce82d032430f859c6df0c52eb9ce1a337a81d56
 
 ## Macros
 ### `sui_literal!`
-The sui_literal macro transforms a hexadecimal literal into either an ObjectID or SuiAddress based on the suffix provided.
+The sui_literal macro transforms a hexadecimal literal into either an `ObjectID` or `SuiAddress` based on the suffix provided.
 
 ### Supported Suffixes
-`_object`: Transforms the literal into an ObjectID.
+`_object`: Transforms the literal into an `ObjectID`.
 
-`_address`: Transforms the literal into a SuiAddress.
+`_address`: Transforms the literal into a `SuiAddress`.
 
 ## Debugging
 Debug prints are enabled to aid in development and troubleshooting. These prints can be seen in the console output when running your project.
