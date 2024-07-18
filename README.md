@@ -81,18 +81,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Examples](#examples)
-- [Error Handling](#error-handling)
-- [Constants](#constants)
-- [API](#api)
-  - [Enum `TransformInto`](#enum-transforminto)
-  - [Function `TransformInto::from_str`](#function-transformintofrom_str)
-  - [Function `compute_str_limbs`](#function-compute_str_limbs)
-  - [Function `construct_objectid`](#function-construct_objectid)
-  - [Function `construct_address`](#function-construct_address)
-  - [Function `parse_suffix`](#function-parse_suffix)
-  - [Function `transform_literal`](#function-transform_literal)
-  - [Function `transform_tree`](#function-transform_tree)
-  - [Function `transform_stream_hash`](#function-transform_stream_hash)
 - [Debugging](#debugging)
 - [Contributing](#contributing)
 - [Building The Project](#building-the-project)
@@ -154,34 +142,6 @@ The sui_literal macro transforms a hexadecimal literal into either an ObjectID o
 `_object`: Transforms the literal into an ObjectID.
 
 `_address`: Transforms the literal into a SuiAddress.
-
-## API
-
-## Function Definitions
-
-### Enum `TransformInto::from_str`
-Parses a string slice to determine the transformation target (SuiAddress or ObjectID).
-
-### Function `compute_str_limbs`
-Computes a string representation of limbs for hexadecimal literals.
-
-### Function `construct_objectid`
-Constructs an ObjectID literal from limbs.
-
-### Function `construct_address`
-Constructs a SuiAddress literal from limbs.
-
-### Function `parse_suffix`
-Parses the suffix following a literal to determine the transformation type and value.
-
-### Function `transform_literal`
-Transforms a literal into a token stream based on its suffix.
-
-### Function `transform_tree`
-Recursively transforms all literals within a token tree.
-
-### Function `transform_stream_hash`
-Iterates over a token stream and transforms all literals within it.
 
 ## Debugging
 Debug prints are enabled to aid in development and troubleshooting. These prints can be seen in the console output when running your project.

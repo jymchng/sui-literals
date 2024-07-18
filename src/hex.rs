@@ -104,6 +104,7 @@ const O_X: &str = "0x";
 const SUI_ADDRESS_BYTE_LENGTH: usize = 32;
 
 /// Enumerates the target types for transformation.
+#[derive(Debug)]
 enum TransformInto {
     SuiAddress,
     ObjectID,
