@@ -244,48 +244,58 @@ fn transform_literal(source: &Literal) -> TransformationTokenResult<TokenStream>
     }
 }
 
-/// Recursively transforms all literals within a token tree.
+/// Iteratively transforms all literals within a token tree.
 fn transform_tree(tree: TokenTree) -> TransformationTokenResult<TokenTree> {
-    match tree {
-        TokenTree::Group(group) => {
-            let delimiter = group.delimiter();
-            let span = group.span();
-            let transformed_stream = transform_stream_hash(group.stream())?;
-            let mut transformed_group = Group::new(delimiter, transformed_stream);
-            transformed_group.set_span(span);
-            Ok(TokenTree::Group(transformed_group))
+    let mut stack = vec![tree];
+    let mut result_stack = Vec::new();
+
+    while let Some(current_tree) = stack.pop() {
+        match current_tree {
+            TokenTree::Group(group) => {
+                let delimiter = group.delimiter();
+                let span = group.span();
+                let transformed_stream = transform_stream_hash(group.stream())?;
+                let mut transformed_group = Group::new(delimiter, transformed_stream);
+                transformed_group.set_span(span);
+                result_stack.push(TokenTree::Group(transformed_group));
+            }
+            TokenTree::Literal(literal) => {
+                let span = literal.span();
+                let transformed_tree = match transform_literal(&literal) {
+                    Ok(stream) => {
+                        let mut group = Group::new(Delimiter::None, stream);
+                        group.set_span(span);
+                        TokenTree::Group(group)
+                    }
+                    Err(message) => {
+                        return Err(message);
+                    }
+                };
+                transformed_tree.set_span(span);
+                result_stack.push(transformed_tree);
+            }
+            other => {
+                return Err(TransformTokenStreamError::TransformError(
+                    "Only `TokenTree::Group` and `TokenTree::Literal` are allowed in the `TokenStream`"
+                        .to_string(),
+                    other.span(),
+                ));
+            }
         }
-        TokenTree::Literal(a) => {
-            let span = a.span();
-            let _source = a.to_string();
-            let mut tree = match transform_literal(&a) {
-                Ok(stream) => TokenTree::Group({
-                    let mut group = Group::new(Delimiter::None, stream);
-                    group.set_span(span);
-                    group
-                }),
-                Err(message) => {
-                    return Err(message);
-                }
-            };
-            tree.set_span(span);
-            Ok(tree)
-        }
-        tree => Err(TransformTokenStreamError::TransformError(
-            "Only `TokenTree::Group` and `TokenTree::Literal` are allowed in the `TokenStream`"
-                .to_string(),
-            tree.span(),
-        )),
     }
+
+    Ok(result_stack.pop().unwrap())
 }
 
 /// Iterates over a `TokenStream` and transforms all `TokenTree`s.
 pub fn transform_stream_hash(stream: TokenStream) -> TransformationTokenResult<TokenStream> {
     let mut result = TokenStream::new();
+    let mut stack: Vec<TokenTree> = stream.into_iter().collect();
 
-    for tree in stream {
+    while let Some(tree) = stack.pop() {
         result.extend(TokenStream::from(transform_tree(tree)?));
     }
 
     Ok(result)
 }
+
